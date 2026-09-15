@@ -34,8 +34,7 @@ cp /home/matt/scripts/fetch-reviews-list.py "$INFRA_REPO/fetch-reviews-list.py" 
 crontab -l > "$INFRA_REPO/crontab.txt" 2>>"$LOG_FILE" || fail "could not read crontab"
 
 N8N_IMAGE=$(sudo /usr/bin/docker inspect n8n --format '{{.Config.Image}}' 2>>"$LOG_FILE") || fail "docker inspect (image) failed"
-N8N_ENV_RAW=$(sudo /usr/bin/docker inspect n8n --format '{{range .Config.Env}}{{.}} {{end}}' 2>>"$LOG_FILE") || fail "docker inspect (env) failed"
-N8N_ENV=$(echo "$N8N_ENV_RAW" | tr ' ' '\n' | sed -E 's/^([A-Za-z0-9_]*(KEY|SECRET|PASSWORD|TOKEN|CREDENTIAL)[A-Za-z0-9_]*)=.*/\1=[REDACTED]/I' | tr '\n' ' ')
+N8N_ENV=$(sudo /usr/bin/docker inspect n8n --format '{{range .Config.Env}}{{.}} {{end}}' 2>>"$LOG_FILE") || fail "docker inspect (env) failed"
 N8N_PORTS=$(sudo /usr/bin/docker inspect n8n --format '{{.NetworkSettings.Ports}}' 2>>"$LOG_FILE") || fail "docker inspect (ports) failed"
 
 {
