@@ -1,0 +1,4 @@
+2026-09-16 19:20:20 Warning: 28 review(s) failed validation (first bad index 42). File not updated.
+2026-09-16 19:21:52 Backed up reviews-list.json to reviews-list.json.auto-bak.20260916_192152
+2026-09-16 19:21:52 Wrote 157 reviews to reviews-list.json (atomic).
+2026-09-16 19:21:52 Verified: reviews-list.json contains 157 reviews.
