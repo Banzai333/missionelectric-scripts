@@ -2,7 +2,8 @@
 # cloudflared-backup-missionelectric.sh
 # Nightly encrypted backup of CT201's Cloudflare tunnel credentials
 # (config.yml, credentials json), pushed to private GitHub repo.
-# Reuses the same GPG passphrase already set up for n8n-backup-missionelectric.sh.
+# Reuses the same GPG passphrase already set up for n8n-backup-missionelectric.sh,
+# read via sudo from a root-only file.
 
 set -uo pipefail
 
@@ -37,9 +38,11 @@ sudo /usr/bin/tar -czf "$TAR_FILE" -C "$SOURCE_DIR" . 2>>"$LOG_FILE" || fail "ta
 
 sudo chown matt:matt "$TAR_FILE" || fail "could not chown tar file"
 
-gpg --batch --yes --passphrase-file "$PASSPHRASE_FILE" \
+gpg --batch --yes --passphrase-fd 3 \
     --symmetric --cipher-algo AES256 \
-    --output "$ENC_FILE" "$TAR_FILE" 2>>"$LOG_FILE" || fail "gpg encryption failed"
+    --output "$ENC_FILE" "$TAR_FILE" \
+    3< <(sudo -n /usr/bin/cat "$PASSPHRASE_FILE") \
+    2>>"$LOG_FILE" || fail "gpg encryption failed"
 
 rm -f "$TAR_FILE" || fail "could not remove plaintext tar after encryption"
 

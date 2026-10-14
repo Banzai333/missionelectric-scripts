@@ -2,7 +2,7 @@
 # n8n-backup-missionelectric.sh
 # Nightly encrypted backup of n8n's full data volume (workflows, credentials,
 # encryption key) for Mission Electric, pushed to private GitHub repo.
-# Tar volume -> encrypt with GPG (symmetric, passphrase from owner-only file)
+# Tar volume -> encrypt with GPG (symmetric, passphrase read via sudo from a root-only file)
 # -> push -> delete plaintext tar.
 
 set -uo pipefail
@@ -38,9 +38,11 @@ sudo /usr/bin/tar -czf "$TAR_FILE" -C "$VOLUME_PATH" . 2>>"$LOG_FILE" || fail "t
 
 sudo chown matt:matt "$TAR_FILE" || fail "could not chown tar file"
 
-gpg --batch --yes --passphrase-file "$PASSPHRASE_FILE" \
+gpg --batch --yes --passphrase-fd 3 \
     --symmetric --cipher-algo AES256 \
-    --output "$ENC_FILE" "$TAR_FILE" 2>>"$LOG_FILE" || fail "gpg encryption failed"
+    --output "$ENC_FILE" "$TAR_FILE" \
+    3< <(sudo -n /usr/bin/cat "$PASSPHRASE_FILE") \
+    2>>"$LOG_FILE" || fail "gpg encryption failed"
 
 rm -f "$TAR_FILE" || fail "could not remove plaintext tar after encryption"
 
