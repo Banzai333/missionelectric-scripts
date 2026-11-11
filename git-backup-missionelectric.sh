@@ -25,8 +25,8 @@ log "=== Backup run started ==="
 
 # --- INFRA REPO ---
 
-sudo /usr/bin/cp /etc/nginx/sites-available/missionelectric "$INFRA_REPO/missionelectric" 2>>"$LOG_FILE" || fail "could not copy nginx site config"
-sudo /usr/bin/cp /etc/nginx/nginx.conf "$INFRA_REPO/nginx.conf" 2>>"$LOG_FILE" || fail "could not copy nginx.conf"
+cp /etc/nginx/sites-available/missionelectric "$INFRA_REPO/missionelectric" 2>>"$LOG_FILE" || fail "could not copy nginx site config"
+cp /etc/nginx/nginx.conf "$INFRA_REPO/nginx.conf" 2>>"$LOG_FILE" || fail "could not copy nginx.conf"
 cp /etc/cloudflared/config.yml "$INFRA_REPO/cloudflared-config.yml" 2>>"$LOG_FILE" || fail "could not copy cloudflared config"
 cp /home/matt/scripts/fetch-reviews-count.py "$INFRA_REPO/fetch-reviews-count.py" 2>>"$LOG_FILE" || fail "could not copy fetch-reviews-count.py"
 cp /home/matt/scripts/fetch-reviews-list.py "$INFRA_REPO/fetch-reviews-list.py" 2>>"$LOG_FILE" || fail "could not copy fetch-reviews-list.py"
